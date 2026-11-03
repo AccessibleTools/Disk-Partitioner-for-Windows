@@ -1309,11 +1309,14 @@ namespace DiskPartitioner
             if (dlg.ShowDialog() == true)
             {
                 _isOperationInProgress = true;
+                pbOperation.Visibility = Visibility.Visible;
+                pbOperation.Value = 0;
                 txtStatus.Text = $"Extending Partition {part.PartitionNumber}...";
-                Announce($"Extending Partition {part.PartitionNumber}...");
+                Announce($"Extending Partition {part.PartitionNumber}. Please wait...");
 
                 var result = await _diskpartService.ExtendPartitionAsync(part.DiskIndex, part.PartitionNumber, dlg.DeltaMb, part.DriveLetter);
 
+                pbOperation.Visibility = Visibility.Collapsed;
                 _isOperationInProgress = false;
                 Announce(result.Message);
                 if (!result.Success)
@@ -1343,11 +1346,14 @@ namespace DiskPartitioner
             if (dlg.ShowDialog() == true)
             {
                 _isOperationInProgress = true;
+                pbOperation.Visibility = Visibility.Visible;
+                pbOperation.Value = 0;
                 txtStatus.Text = $"Shrinking Partition {part.PartitionNumber}...";
-                Announce($"Shrinking Partition {part.PartitionNumber}...");
+                Announce($"Shrinking Partition {part.PartitionNumber}. Please wait...");
 
                 var result = await _diskpartService.ShrinkPartitionAsync(part.DiskIndex, part.PartitionNumber, dlg.DeltaMb, part.DriveLetter);
 
+                pbOperation.Visibility = Visibility.Collapsed;
                 _isOperationInProgress = false;
                 Announce(result.Message);
                 if (!result.Success)
@@ -1383,11 +1389,14 @@ namespace DiskPartitioner
             if (confirm == MessageBoxResult.OK)
             {
                 _isOperationInProgress = true;
+                pbOperation.Visibility = Visibility.Visible;
+                pbOperation.Value = 0;
                 txtStatus.Text = $"Deleting Partition {part.PartitionNumber}...";
-                Announce($"Deleting Partition {part.PartitionNumber}...");
+                Announce($"Deleting Partition {part.PartitionNumber}. Please wait...");
 
                 var result = await _diskpartService.DeletePartitionAsync(part.DiskIndex, part.PartitionNumber, overrideFlag: false);
 
+                pbOperation.Visibility = Visibility.Collapsed;
                 _isOperationInProgress = false;
                 Announce(result.Message);
                 if (!result.Success)
@@ -1404,11 +1413,14 @@ namespace DiskPartitioner
                         if (retryWithOverride == MessageBoxResult.Yes)
                         {
                             _isOperationInProgress = true;
+                            pbOperation.Visibility = Visibility.Visible;
+                            pbOperation.Value = 0;
                             txtStatus.Text = $"Force deleting Partition {part.PartitionNumber}...";
-                            Announce($"Force deleting Partition {part.PartitionNumber}...");
+                            Announce($"Force deleting Partition {part.PartitionNumber}. Please wait...");
 
                             var overrideResult = await _diskpartService.DeletePartitionAsync(part.DiskIndex, part.PartitionNumber, overrideFlag: true);
 
+                            pbOperation.Visibility = Visibility.Collapsed;
                             _isOperationInProgress = false;
                             Announce(overrideResult.Message);
                             if (!overrideResult.Success)
@@ -1454,11 +1466,14 @@ namespace DiskPartitioner
             if (confirm == MessageBoxResult.OK)
             {
                 _isOperationInProgress = true;
+                pbOperation.Visibility = Visibility.Visible;
+                pbOperation.Value = 0;
                 txtStatus.Text = $"Force deleting Partition {part.PartitionNumber}...";
-                Announce($"Force deleting Partition {part.PartitionNumber}...");
+                Announce($"Force deleting Partition {part.PartitionNumber}. Please wait...");
 
                 var result = await _diskpartService.DeletePartitionAsync(part.DiskIndex, part.PartitionNumber, overrideFlag: true);
 
+                pbOperation.Visibility = Visibility.Collapsed;
                 _isOperationInProgress = false;
                 Announce(result.Message);
                 if (!result.Success)

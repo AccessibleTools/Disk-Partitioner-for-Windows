@@ -32,6 +32,16 @@ namespace DiskPartitioner.Services
 
     public class DiskpartExecutionService : IDiskpartExecutionService
     {
+        public static string EnsureTerminalExit(string scriptContent)
+        {
+            string cleanScript = scriptContent.TrimEnd();
+            if (!cleanScript.EndsWith("exit", StringComparison.OrdinalIgnoreCase))
+            {
+                cleanScript += "\nexit\n";
+            }
+            return cleanScript;
+        }
+
         public async Task<DiskOperationResult> ExecuteScriptAsync(
             string scriptContent, 
             string operationName, 
@@ -42,7 +52,10 @@ namespace DiskPartitioner.Services
 
             try
             {
-                await File.WriteAllTextAsync(tempScript, scriptContent, Encoding.ASCII);
+                // Ensure script terminates cleanly with 'exit' so DiskPart exits immediately without waiting for stdin timeout
+                string cleanScript = EnsureTerminalExit(scriptContent);
+
+                await File.WriteAllTextAsync(tempScript, cleanScript, Encoding.ASCII);
 
                 var psi = new ProcessStartInfo
                 {
@@ -51,6 +64,7 @@ namespace DiskPartitioner.Services
                     UseShellExecute = false,
                     RedirectStandardOutput = true,
                     RedirectStandardError = true,
+                    RedirectStandardInput = true,
                     CreateNoWindow = true,
                     StandardOutputEncoding = Encoding.ASCII
                 };
@@ -93,6 +107,7 @@ namespace DiskPartitioner.Services
                 };
 
                 process.Start();
+                process.StandardInput.Close();
                 process.BeginOutputReadLine();
                 process.BeginErrorReadLine();
 

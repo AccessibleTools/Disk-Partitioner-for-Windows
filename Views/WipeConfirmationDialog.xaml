@@ -29,7 +29,32 @@
             </StackPanel>
 
             <DockPanel Grid.Row="4" LastChildFill="False" Margin="0,16,0,0">
-                <Button x:Name="btnClean" Content="Clean Disk Now" IsEnabled="False" Padding="16,8" DockPanel.Dock="Right" Background="#983E3E" Foreground="#FFFFFF" FontWeight="SemiBold" Click="BtnClean_Click"/>
+                <Button x:Name="btnClean" Content="Clean Disk Now" IsEnabled="False" Padding="16,8" DockPanel.Dock="Right" FontWeight="SemiBold" Click="BtnClean_Click">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Background" Value="#DC2626"/>
+                            <Setter Property="Foreground" Value="#FFFFFF"/>
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border x:Name="bd" Background="{TemplateBinding Background}" CornerRadius="4" Padding="{TemplateBinding Padding}">
+                                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsEnabled" Value="False">
+                                                <Setter Property="Background" TargetName="bd" Value="#334155"/>
+                                                <Setter Property="TextElement.Foreground" TargetName="bd" Value="#64748B"/>
+                                            </Trigger>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="Background" TargetName="bd" Value="#B91C1C"/>
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </Button.Style>
+                </Button>
                 <Button x:Name="btnCancel" Content="Cancel" Padding="16,8" DockPanel.Dock="Right" Margin="0,0,10,0" Background="{StaticResource InputBackgroundBrush}" Foreground="{StaticResource TextPrimaryBrush}" BorderBrush="{StaticResource BorderBrush}" IsCancel="True" Click="BtnCancel_Click"/>
             </DockPanel>
         </Grid>

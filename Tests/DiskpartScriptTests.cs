@@ -110,5 +110,17 @@ namespace DiskPartitioner.Tests
             string remove = DiskpartExecutionService.BuildRemoveLetterScript(1, 2, 'f');
             Assert.Contains("remove letter=F", remove);
         }
+
+        [Fact]
+        public void EnsureTerminalExit_AppendsExitIfMissing()
+        {
+            string scriptWithoutExit = "select disk 1\nextend size=5120";
+            string prepared = DiskpartExecutionService.EnsureTerminalExit(scriptWithoutExit);
+            Assert.EndsWith("exit\n", prepared);
+
+            string scriptWithExit = "select disk 1\nextend size=5120\nexit\n";
+            string preparedWithExit = DiskpartExecutionService.EnsureTerminalExit(scriptWithExit);
+            Assert.Equal("select disk 1\nextend size=5120\nexit\n", preparedWithExit);
+        }
     }
 }
