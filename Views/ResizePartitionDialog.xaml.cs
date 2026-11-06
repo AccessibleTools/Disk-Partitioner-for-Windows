@@ -186,9 +186,9 @@ namespace DiskPartitioner.Views
                 }
 
                 long totalMb = _partition.SizeBytes / (1024 * 1024);
-                if (mb >= totalMb - 50)
+                if (mb >= totalMb)
                 {
-                    MessageBox.Show(this, $"Shrink amount ({mb:N0} MB) is too large. A partition cannot be shrunk to less than 50 MB.", "Size Exceeds Limit", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBox.Show(this, $"Shrink amount ({mb:N0} MB) is too large. A partition cannot be shrunk to less than 1 MB.", "Size Exceeds Limit", MessageBoxButton.OK, MessageBoxImage.Warning);
                     txtDeltaValue.Focus();
                     return;
                 }

@@ -201,15 +201,28 @@ namespace DiskPartitioner.Tests
         }
 
         [Fact]
-        public void CanModifyDriveLetter_ProtectsEfiSystemPartition()
+        public void CanModifyDriveLetter_AllowsEfiSystemPartition()
         {
             var disk = new PhysicalDiskItem { DiskIndex = 0 };
             var efi = new PartitionItem { DiskIndex = 0, PartitionNumber = 1, IsBoot = true, GptTypeGuid = GptPartitionTypes.EfiSystem };
 
             var result = _guardrails.CanModifyDriveLetter(disk, efi);
 
-            Assert.False(result.IsAllowed);
-            Assert.Contains("EFI System Boot", result.Reason);
+            Assert.True(result.IsAllowed);
+            Assert.Empty(result.Reason);
+        }
+
+        [Fact]
+        public void CanShrinkPartition_AllowsVolumesWithAtLeast1MbFreeSpace()
+        {
+            var disk = new PhysicalDiskItem { DiskIndex = 1 };
+            var lowSpacePart = new PartitionItem { DiskIndex = 1, PartitionNumber = 1, FileSystem = "NTFS", FreeSizeBytes = 500L * 1024 };
+            var oneMbPart = new PartitionItem { DiskIndex = 1, PartitionNumber = 2, FileSystem = "NTFS", FreeSizeBytes = 1024L * 1024 };
+            var tenMbPart = new PartitionItem { DiskIndex = 1, PartitionNumber = 3, FileSystem = "NTFS", FreeSizeBytes = 10L * 1024 * 1024 };
+
+            Assert.False(_guardrails.CanShrinkPartition(disk, lowSpacePart).IsAllowed);
+            Assert.True(_guardrails.CanShrinkPartition(disk, oneMbPart).IsAllowed);
+            Assert.True(_guardrails.CanShrinkPartition(disk, tenMbPart).IsAllowed);
         }
 
         [Fact]

@@ -183,11 +183,6 @@ namespace DiskPartitioner.Services
                 return GuardrailCheckResult.Blocked("The Microsoft Reserved (MSR) partition cannot have a drive letter.");
             }
 
-            if (partition.IsBoot || partition.GptTypeGuid == GptPartitionTypes.EfiSystem)
-            {
-                return GuardrailCheckResult.Blocked("The EFI System Boot partition is reserved for UEFI firmware and cannot have its drive letter modified.");
-            }
-
             string systemDrive = Path.GetPathRoot(Environment.SystemDirectory)?.TrimEnd('\\') ?? "C:";
             if (partition.IsSystem || (partition.DriveLetter != null && partition.DriveLetter.Equals(systemDrive, StringComparison.OrdinalIgnoreCase)))
             {
@@ -234,9 +229,9 @@ namespace DiskPartitioner.Services
                 }
             }
 
-            if (partition.FreeSizeBytes >= 0 && partition.FreeSizeBytes < 50 * 1024 * 1024)
+            if (partition.FreeSizeBytes >= 0 && partition.FreeSizeBytes < 1024 * 1024)
             {
-                return GuardrailCheckResult.Blocked($"Partition {partition.PartitionNumber} has only {partition.FormattedFreeSize} free space. At least 50 MB of free space is required to shrink a volume.");
+                return GuardrailCheckResult.Blocked($"Partition {partition.PartitionNumber} has only {partition.FormattedFreeSize} free space. At least 1 MB of free space is required to shrink a volume.");
             }
 
             return GuardrailCheckResult.Allowed();
