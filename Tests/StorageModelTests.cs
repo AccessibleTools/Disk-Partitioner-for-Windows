@@ -123,11 +123,13 @@ namespace DiskPartitioner.Tests
         [Fact]
         public void PartitionItem_CopyFrom_SyncsPropertiesInPlace()
         {
-            var partA = new PartitionItem { PartitionNumber = 1, VolumeLabel = "Old", FreeSizeBytes = 1000 };
-            var partB = new PartitionItem { PartitionNumber = 1, VolumeLabel = "New", FreeSizeBytes = 2000, DriveLetter = "D:" };
+            var partA = new PartitionItem { DiskIndex = 0, PartitionNumber = 1, VolumeLabel = "Old", FreeSizeBytes = 1000 };
+            var partB = new PartitionItem { DiskIndex = 1, PartitionNumber = 2, VolumeLabel = "New", FreeSizeBytes = 2000, DriveLetter = "D:" };
 
             partA.CopyFrom(partB);
 
+            Assert.Equal(1, partA.DiskIndex);
+            Assert.Equal(2u, partA.PartitionNumber);
             Assert.Equal("New", partA.VolumeLabel);
             Assert.Equal(2000, partA.FreeSizeBytes);
             Assert.Equal("D:", partA.DriveLetter);

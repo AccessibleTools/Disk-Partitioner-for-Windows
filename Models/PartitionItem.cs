@@ -247,6 +247,8 @@ namespace DiskPartitioner.Models
 
         public void CopyFrom(PartitionItem other)
         {
+            DiskIndex = other.DiskIndex;
+            PartitionNumber = other.PartitionNumber;
             DriveLetter = other.DriveLetter;
             VolumeLabel = other.VolumeLabel;
             FileSystem = other.FileSystem;

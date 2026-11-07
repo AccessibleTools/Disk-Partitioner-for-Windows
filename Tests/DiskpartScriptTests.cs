@@ -108,6 +108,7 @@ namespace DiskPartitioner.Tests
             Assert.Contains("assign letter=F", assign);
 
             string remove = DiskpartExecutionService.BuildRemoveLetterScript(1, 2, 'f');
+            Assert.Contains("select volume F", remove);
             Assert.Contains("remove letter=F", remove);
         }
 

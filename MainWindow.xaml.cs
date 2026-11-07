@@ -41,6 +41,7 @@ namespace DiskPartitioner
         private bool _isPartitionRefreshing;
         private bool _isOperationInProgress;
         private bool _isInitialLoad = true;
+        private int _lastSelectedDiskIndex = -1;
         private CancellationTokenSource? _memoryTrimCts;
         private readonly object _trimLock = new object();
         private UIElement? _lastFocusedElementBeforeMenu;
@@ -312,6 +313,7 @@ namespace DiskPartitioner
             {
                 if (lstDisks.SelectedItem is not PhysicalDiskItem selectedDisk)
                 {
+                    _lastSelectedDiskIndex = -1;
                     Partitions.Clear();
                     _partitionMap.Clear();
                     txtPartitionsHeader.Text = "2. Partitions & Volumes";
@@ -329,13 +331,17 @@ namespace DiskPartitioner
 
                 if (lstDisks.SelectedItem is PhysicalDiskItem current && current.DiskIndex == diskIdx)
                 {
+                    bool isDiskSwitch = _lastSelectedDiskIndex != diskIdx;
+                    _lastSelectedDiskIndex = diskIdx;
+
                     CollectionHelper.SynchronizeInPlace(
                         Partitions,
                         _partitionMap,
                         freshPartitions,
-                        p => $"{p.PartitionNumber}_{p.StartingOffset}",
+                        p => $"{p.DiskIndex}_{p.PartitionNumber}_{p.StartingOffset}",
                         (dest, src) => dest.CopyFrom(src),
-                        lstPartitions);
+                        lstPartitions,
+                        isFullReset: isDiskSwitch);
 
                     int realPartitions = Partitions.Count(p => !p.IsUnallocated);
                     int unallocatedCount = Partitions.Count(p => p.IsUnallocated);

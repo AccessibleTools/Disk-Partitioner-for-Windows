@@ -268,7 +268,7 @@ namespace DiskPartitioner.Services
             $"select disk {diskIndex}\nselect partition {partitionNumber}\nassign letter={char.ToUpperInvariant(letter)}\n";
 
         public static string BuildRemoveLetterScript(int diskIndex, uint partitionNumber, char letter) =>
-            $"select disk {diskIndex}\nselect partition {partitionNumber}\nremove letter={char.ToUpperInvariant(letter)}\n";
+            $"select volume {char.ToUpperInvariant(letter)}\nremove letter={char.ToUpperInvariant(letter)}\n";
 
         public static string BuildExtendScript(int diskIndex, uint partitionNumber, long sizeMb, string? driveLetter = null)
         {
