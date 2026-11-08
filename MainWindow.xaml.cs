@@ -1152,7 +1152,8 @@ namespace DiskPartitioner
                     dlg.VolumeLabel,
                     dlg.QuickFormat,
                     progressPct,
-                    progressMsg);
+                    progressMsg,
+                    unallocated.StartingOffset);
 
                 pbOperation.Visibility = Visibility.Collapsed;
                 _isOperationInProgress = false;
@@ -1302,13 +1303,12 @@ namespace DiskPartitioner
                     maxExtendMb = Math.Max(0, nextItem.SizeBytes / (1024 * 1024));
                 }
             }
-            if (maxExtendMb == 0)
+            if (maxExtendMb <= 0)
             {
-                var anyUnallocated = Partitions.FirstOrDefault(p => p.IsUnallocated);
-                if (anyUnallocated != null)
-                {
-                    maxExtendMb = Math.Max(0, anyUnallocated.SizeBytes / (1024 * 1024));
-                }
+                string reason = $"Partition {part.PartitionNumber} cannot be extended because there is no adjacent unallocated space immediately following it on the disk.\n\nWindows basic disks require unallocated space to be directly adjacent to the volume to extend.";
+                MessageBox.Show(this, reason, "Cannot Extend Partition", MessageBoxButton.OK, MessageBoxImage.Information);
+                Announce(reason);
+                return;
             }
 
             var dlg = new ResizePartitionDialog(part, isShrink: false, maxAvailableMb: maxExtendMb) { Owner = this };

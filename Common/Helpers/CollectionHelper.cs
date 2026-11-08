@@ -54,26 +54,26 @@ namespace DiskPartitioner.Helpers
                 }
             }
 
-            // Update existing in-place, collect new ones to add
-            var toAdd = new List<TItem>();
-            foreach (var incoming in newItems)
+            // Synchronize items in-place while strictly preserving the exact sequence of newItems
+            var incomingList = newItems.ToList();
+            for (int i = 0; i < incomingList.Count; i++)
             {
+                var incoming = incomingList[i];
                 var key = keySelector(incoming);
                 if (map.TryGetValue(key, out var existing))
                 {
                     updateAction(existing, incoming);
+                    int currentIndex = collection.IndexOf(existing);
+                    if (currentIndex != i && currentIndex >= 0)
+                    {
+                        collection.Move(currentIndex, i);
+                    }
                 }
                 else
                 {
-                    toAdd.Add(incoming);
+                    collection.Insert(i, incoming);
+                    map[key] = incoming;
                 }
-            }
-
-            // Append new items
-            foreach (var item in toAdd)
-            {
-                collection.Add(item);
-                map[keySelector(item)] = item;
             }
 
             // Restore selection

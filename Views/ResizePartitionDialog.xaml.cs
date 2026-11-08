@@ -83,7 +83,8 @@ namespace DiskPartitioner.Views
                 if (_maxAvailableMb >= 1024)
                 {
                     cmbDeltaUnit.SelectedIndex = 0; // GB
-                    txtDeltaValue.Text = Math.Round(_maxAvailableMb / 1024.0, 2).ToString(System.Globalization.CultureInfo.InvariantCulture);
+                    double gbVal = Math.Floor((_maxAvailableMb / 1024.0) * 100.0) / 100.0;
+                    txtDeltaValue.Text = gbVal.ToString(System.Globalization.CultureInfo.InvariantCulture);
                 }
                 else if (_maxAvailableMb > 0)
                 {
@@ -127,7 +128,10 @@ namespace DiskPartitioner.Views
                 _isUpdatingUnit = true;
                 if (newIndex == 0 && _lastUnitIndex == 1) // MB to GB
                 {
-                    txtDeltaValue.Text = Math.Round(val / 1024.0, 2).ToString(System.Globalization.CultureInfo.InvariantCulture);
+                    double gbVal = !IsShrink
+                        ? Math.Floor((val / 1024.0) * 100.0) / 100.0
+                        : Math.Round(val / 1024.0, 2);
+                    txtDeltaValue.Text = gbVal.ToString(System.Globalization.CultureInfo.InvariantCulture);
                 }
                 else if (newIndex == 1 && _lastUnitIndex == 0) // GB to MB
                 {
@@ -145,7 +149,10 @@ namespace DiskPartitioner.Views
             {
                 if (cmbDeltaUnit.SelectedIndex == 0)
                 {
-                    txtDeltaValue.Text = Math.Round(_maxAvailableMb / 1024.0, 2).ToString(System.Globalization.CultureInfo.InvariantCulture);
+                    double gbVal = !IsShrink
+                        ? Math.Floor((_maxAvailableMb / 1024.0) * 100.0) / 100.0
+                        : Math.Round(_maxAvailableMb / 1024.0, 2);
+                    txtDeltaValue.Text = gbVal.ToString(System.Globalization.CultureInfo.InvariantCulture);
                 }
                 else
                 {
@@ -208,10 +215,15 @@ namespace DiskPartitioner.Views
             }
             else
             {
-                if (_maxAvailableMb > 0 && mb > _maxAvailableMb)
+                // When extending, allow a small rounding margin (~16 MB, equivalent to ~0.015 GB)
+                // so that entering rounded GB values (e.g. 98.5 when max is 98.49) does not reject the user.
+                const long RoundingToleranceMb = 16;
+
+                if (_maxAvailableMb > 0 && mb > (_maxAvailableMb + RoundingToleranceMb))
                 {
+                    double maxGb = Math.Floor((_maxAvailableMb / 1024.0) * 100.0) / 100.0;
                     string maxDisp = cmbDeltaUnit.SelectedIndex == 0
-                        ? $"{Math.Round(_maxAvailableMb / 1024.0, 2):N2} GB"
+                        ? $"{maxGb:N2} GB"
                         : $"{_maxAvailableMb:N0} MB";
 
                     MessageBox.Show(this, $"The entered size exceeds available unallocated space ({maxDisp}).", "Size Exceeds Capacity", MessageBoxButton.OK, MessageBoxImage.Warning);
@@ -219,8 +231,10 @@ namespace DiskPartitioner.Views
                     return;
                 }
 
-                // In Diskpart, size=0 or omitting size extends across all available unallocated space
-                if (mb <= 0 || (_maxAvailableMb > 0 && mb >= _maxAvailableMb))
+                // In Diskpart, size=0 or omitting size extends across all available unallocated space.
+                // If user entered 0 or specified an amount within rounding tolerance of max available space,
+                // use 0 so Diskpart allocates 100% of contiguous unallocated space with perfect sector alignment.
+                if (mb <= 0 || (_maxAvailableMb > 0 && mb >= (_maxAvailableMb - RoundingToleranceMb)))
                 {
                     DeltaMb = 0;
                 }

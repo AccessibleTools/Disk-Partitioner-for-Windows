@@ -21,7 +21,16 @@ namespace DiskPartitioner.Services
         Task<DiskOperationResult> ConvertStyleAsync(int diskIndex, string style);
         Task<DiskOperationResult> SetDiskReadOnlyAsync(int diskIndex, bool readOnly);
         Task<DiskOperationResult> SetDiskOfflineAsync(int diskIndex, bool offline);
-        Task<DiskOperationResult> CreatePartitionAsync(int diskIndex, long sizeMb, string? driveLetter, string? fileSystem, string? label, bool quick = true, IProgress<int>? progressPercentage = null, IProgress<string>? progressStatus = null);
+        Task<DiskOperationResult> CreatePartitionAsync(
+            int diskIndex, 
+            long sizeMb, 
+            string? driveLetter, 
+            string? fileSystem, 
+            string? label, 
+            bool quick = true, 
+            IProgress<int>? progressPercentage = null, 
+            IProgress<string>? progressStatus = null,
+            long? startingOffsetBytes = null);
         Task<DiskOperationResult> FormatPartitionAsync(int diskIndex, uint partitionNumber, string fileSystem, string label, bool quick, IProgress<int>? progressPercentage = null, IProgress<string>? progressStatus = null);
         Task<DiskOperationResult> AssignDriveLetterAsync(int diskIndex, uint partitionNumber, char letter);
         Task<DiskOperationResult> RemoveDriveLetterAsync(int diskIndex, uint partitionNumber, char letter);
@@ -227,18 +236,29 @@ namespace DiskPartitioner.Services
         public static string BuildOfflineScript(int diskIndex, bool offline) =>
             $"select disk {diskIndex}\n{(offline ? "offline" : "online")} disk\n";
 
-        public static string BuildCreatePartitionScript(int diskIndex, long sizeMb, string? driveLetter, string? fileSystem, string? label, bool quick = true)
+        public static string BuildCreatePartitionScript(
+            int diskIndex, 
+            long sizeMb, 
+            string? driveLetter, 
+            string? fileSystem, 
+            string? label, 
+            bool quick = true, 
+            long? startingOffsetBytes = null)
         {
             var sb = new StringBuilder();
             sb.AppendLine($"select disk {diskIndex}");
 
+            string offsetClause = startingOffsetBytes.HasValue && startingOffsetBytes.Value >= 0
+                ? $" offset={startingOffsetBytes.Value / 1024}"
+                : string.Empty;
+
             if (sizeMb > 0)
             {
-                sb.AppendLine($"create partition primary size={sizeMb}");
+                sb.AppendLine($"create partition primary size={sizeMb}{offsetClause}");
             }
             else
             {
-                sb.AppendLine("create partition primary");
+                sb.AppendLine($"create partition primary{offsetClause}");
             }
 
             if (!string.IsNullOrWhiteSpace(driveLetter))
@@ -326,9 +346,10 @@ namespace DiskPartitioner.Services
             string? label, 
             bool quick = true, 
             IProgress<int>? progressPercentage = null, 
-            IProgress<string>? progressStatus = null)
+            IProgress<string>? progressStatus = null,
+            long? startingOffsetBytes = null)
         {
-            return ExecuteScriptAsync(BuildCreatePartitionScript(diskIndex, sizeMb, driveLetter, fileSystem, label, quick), $"Create Primary Partition on Disk {diskIndex}", progressPercentage, progressStatus);
+            return ExecuteScriptAsync(BuildCreatePartitionScript(diskIndex, sizeMb, driveLetter, fileSystem, label, quick, startingOffsetBytes), $"Create Primary Partition on Disk {diskIndex}", progressPercentage, progressStatus);
         }
 
         public Task<DiskOperationResult> FormatPartitionAsync(

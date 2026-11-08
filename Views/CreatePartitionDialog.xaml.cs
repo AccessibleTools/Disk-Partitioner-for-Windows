@@ -34,7 +34,8 @@ namespace DiskPartitioner.Views
             {
                 cmbSizeUnit.SelectedIndex = 0; // GB
                 _lastUnitIndex = 0;
-                txtSizeValue.Text = Math.Round(_maxAvailableMb / 1024.0, 2).ToString(System.Globalization.CultureInfo.InvariantCulture);
+                double gbVal = Math.Floor((_maxAvailableMb / 1024.0) * 100.0) / 100.0;
+                txtSizeValue.Text = gbVal.ToString(System.Globalization.CultureInfo.InvariantCulture);
             }
             else
             {
@@ -82,7 +83,8 @@ namespace DiskPartitioner.Views
                 _isUpdatingUnit = true;
                 if (newIndex == 0 && _lastUnitIndex == 1) // MB to GB
                 {
-                    txtSizeValue.Text = Math.Round(val / 1024.0, 2).ToString(System.Globalization.CultureInfo.InvariantCulture);
+                    double gbVal = Math.Floor((val / 1024.0) * 100.0) / 100.0;
+                    txtSizeValue.Text = gbVal.ToString(System.Globalization.CultureInfo.InvariantCulture);
                 }
                 else if (newIndex == 1 && _lastUnitIndex == 0) // GB to MB
                 {
@@ -98,7 +100,8 @@ namespace DiskPartitioner.Views
         {
             if (cmbSizeUnit.SelectedIndex == 0)
             {
-                txtSizeValue.Text = Math.Round(_maxAvailableMb / 1024.0, 2).ToString(System.Globalization.CultureInfo.InvariantCulture);
+                double gbVal = Math.Floor((_maxAvailableMb / 1024.0) * 100.0) / 100.0;
+                txtSizeValue.Text = gbVal.ToString(System.Globalization.CultureInfo.InvariantCulture);
             }
             else
             {
@@ -128,10 +131,13 @@ namespace DiskPartitioner.Views
                 return;
             }
 
-            if (sizeMb > _maxAvailableMb)
+            const long RoundingToleranceMb = 16;
+
+            if (sizeMb > (_maxAvailableMb + RoundingToleranceMb))
             {
+                double maxGb = Math.Floor((_maxAvailableMb / 1024.0) * 100.0) / 100.0;
                 string maxDisp = cmbSizeUnit.SelectedIndex == 0
-                    ? $"{Math.Round(_maxAvailableMb / 1024.0, 2):N2} GB"
+                    ? $"{maxGb:N2} GB"
                     : $"{_maxAvailableMb:N0} MB";
 
                 MessageBox.Show(this, $"The entered size exceeds available unallocated space ({maxDisp}).", "Size Exceeds Capacity", MessageBoxButton.OK, MessageBoxImage.Warning);
@@ -139,7 +145,14 @@ namespace DiskPartitioner.Views
                 return;
             }
 
-            PartitionSizeMb = sizeMb;
+            if (sizeMb >= (_maxAvailableMb - RoundingToleranceMb))
+            {
+                PartitionSizeMb = 0; // In DiskPart, omitting size occupies 100% of the unallocated extent
+            }
+            else
+            {
+                PartitionSizeMb = sizeMb;
+            }
 
             string letter = cmbDriveLetter.SelectedItem?.ToString() ?? "(None)";
             SelectedDriveLetter = letter.StartsWith("(") ? null : letter.TrimEnd(':');

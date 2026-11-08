@@ -58,6 +58,21 @@ namespace DiskPartitioner.Tests
         }
 
         [Fact]
+        public void BuildCreatePartitionScript_WithStartingOffset_IncludesOffsetInKb()
+        {
+            // 104,857,600 bytes = 102,400 KB
+            long startingOffsetBytes = 104857600;
+            string script = DiskpartExecutionService.BuildCreatePartitionScript(0, 10240, "D:", "ntfs", "Data", quick: true, startingOffsetBytes: startingOffsetBytes);
+            Assert.Contains("select disk 0", script);
+            Assert.Contains("create partition primary size=10240 offset=102400", script);
+
+            // Max size (size=0) with offset
+            string maxSizeScript = DiskpartExecutionService.BuildCreatePartitionScript(0, 0, "D:", "ntfs", "Data", quick: true, startingOffsetBytes: startingOffsetBytes);
+            Assert.Contains("create partition primary offset=102400", maxSizeScript);
+            Assert.DoesNotContain("size=", maxSizeScript);
+        }
+
+        [Fact]
         public void BuildFormatScript_QuickAndFullFormat()
         {
             string quick = DiskpartExecutionService.BuildFormatScript(1, 2, "exfat", "Backup", quick: true);
