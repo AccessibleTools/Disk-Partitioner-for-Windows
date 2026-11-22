@@ -42,6 +42,6 @@
             </ListBox>
         </Border>
 
-        <Button Grid.Row="2" Content="Close" IsCancel="True" HorizontalAlignment="Right" Padding="16,6" Margin="0,12,0,0" Background="{StaticResource SurfaceBackgroundBrush}" Foreground="{StaticResource TextPrimaryBrush}" BorderBrush="{StaticResource BorderBrush}" Click="BtnClose_Click"/>
+        <Button Grid.Row="2" Content="Close" HorizontalAlignment="Right" Padding="16,6" Margin="0,12,0,0" Background="{StaticResource SurfaceBackgroundBrush}" Foreground="{StaticResource TextPrimaryBrush}" BorderBrush="{StaticResource BorderBrush}" Click="BtnClose_Click" AutomationProperties.Name="Close"/>
     </Grid>
 </Window>

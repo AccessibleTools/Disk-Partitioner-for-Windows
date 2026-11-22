@@ -133,19 +133,19 @@ namespace DiskPartitioner.Tests
             {
                 CurrentVersion = "1.0.0",
                 LatestVersion = "1.0.0",
-                HtmlUrl = "https://github.com/AakanshNahadiya/Disk-Partitioner-for-Windows/releases/tag/v1.0.0"
+                HtmlUrl = "https://github.com/AccessibleTools/Disk-Partitioner-for-Windows/releases/tag/v1.0.0"
             };
 
-            Assert.Equal("https://github.com/AakanshNahadiya/Disk-Partitioner-for-Windows/releases/tag/v1.0.0", info.GetEffectiveReleaseUrl());
+            Assert.Equal("https://github.com/AccessibleTools/Disk-Partitioner-for-Windows/releases/tag/v1.0.0", info.GetEffectiveReleaseUrl());
 
             var defaultInfo = new UpdateInfo
             {
                 CurrentVersion = "1.0.0",
                 LatestVersion = "1.0.0",
-                HtmlUrl = "https://github.com/AakanshNahadiya/Disk-Partitioner-for-Windows"
+                HtmlUrl = "https://github.com/AccessibleTools/Disk-Partitioner-for-Windows"
             };
 
-            Assert.Equal("https://github.com/AakanshNahadiya/Disk-Partitioner-for-Windows/releases/tag/v1.0.0", defaultInfo.GetEffectiveReleaseUrl());
+            Assert.Equal("https://github.com/AccessibleTools/Disk-Partitioner-for-Windows/releases/tag/v1.0.0", defaultInfo.GetEffectiveReleaseUrl());
         }
 
         [Fact]

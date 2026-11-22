@@ -19,6 +19,24 @@ namespace DiskPartitioner.Views
             txtLabel.Text = string.IsNullOrWhiteSpace(partition.VolumeLabel) ? "New Volume" : partition.VolumeLabel;
 
             Loaded += (s, e) => txtLabel.Focus();
+
+            KeyDown += (s, e) =>
+            {
+                if (e.Key == System.Windows.Input.Key.Escape)
+                {
+                    e.Handled = true;
+                    BtnCancel_Click(btnCancel, new RoutedEventArgs());
+                }
+                else if (e.Key == System.Windows.Input.Key.Enter)
+                {
+                    if (System.Windows.Input.Keyboard.FocusedElement is System.Windows.Controls.Button)
+                    {
+                        return;
+                    }
+                    e.Handled = true;
+                    BtnFormat_Click(btnFormat, new RoutedEventArgs());
+                }
+            };
         }
 
         private void BtnFormat_Click(object sender, RoutedEventArgs e)

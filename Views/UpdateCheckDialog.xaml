@@ -49,7 +49,7 @@
 
                 <!-- Up to Date / Error buttons -->
                 <Button x:Name="btnViewReleaseNotes" Content="View Release Notes" Padding="14,8" Margin="0,0,10,0" Background="{StaticResource InputBackgroundBrush}" Foreground="{StaticResource TextPrimaryBrush}" BorderBrush="{StaticResource BorderBrush}" Visibility="Collapsed" Click="BtnViewReleaseNotes_Click" AutomationProperties.Name="View Release Notes on GitHub"/>
-                <Button x:Name="btnClose" Content="Close" Padding="16,8" Background="{StaticResource InputBackgroundBrush}" Foreground="{StaticResource TextPrimaryBrush}" BorderBrush="{StaticResource BorderBrush}" IsCancel="True" Click="BtnClose_Click" AutomationProperties.Name="Close"/>
+                <Button x:Name="btnClose" Content="Close" Padding="16,8" Background="{StaticResource InputBackgroundBrush}" Foreground="{StaticResource TextPrimaryBrush}" BorderBrush="{StaticResource BorderBrush}" Click="BtnClose_Click" AutomationProperties.Name="Close"/>
             </StackPanel>
         </Grid>
     </Border>

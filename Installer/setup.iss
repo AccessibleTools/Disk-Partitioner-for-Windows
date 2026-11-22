@@ -1,9 +1,9 @@
 ; Inno Setup 6 Script for Disk Partitioner for Windows
-; Accessible Tools Suite - http://github.com/AakanshNahadiya
+; Accessible Tools Suite - https://github.com/AccessibleTools/Disk-Partitioner-for-Windows
 #define MyAppName "Disk Partitioner for Windows"
-#define MyAppVersion "1.0.2"
+#define MyAppVersion "1.0.3"
 #define MyAppPublisher "Accessible Tools"
-#define MyAppURL "https://github.com/AakanshNahadiya"
+#define MyAppURL "https://github.com/AccessibleTools/Disk-Partitioner-for-Windows"
 #define MyAppExeName "DiskPartitioner.exe"
 
 [Setup]
@@ -22,7 +22,7 @@ DefaultGroupName=Accessible Tools\{#MyAppName}
 DisableProgramGroupPage=yes
 DisableReadyPage=yes
 OutputDir=Output
-OutputBaseFilename=DiskPartitioner_Setup_v1.0.2
+OutputBaseFilename=DiskPartitioner_Setup_v1.0.3
 SetupIconFile=..\Resources\app.ico
 UninstallDisplayIcon={app}\{#MyAppExeName}
 Compression=lzma2/ultra64
@@ -51,20 +51,42 @@ Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
 Name: "{group}\{cm:UninstallProgram,{#MyAppName}}"; Filename: "{uninstallexe}"
 Name: "{commondesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Check: ShouldCreateDesktopIcon
 
+[Registry]
+; Daily auto-update check setting configured from installer
+Root: HKCU; Subkey: "Software\AccessibleTools\DiskPartitioner"; ValueType: dword; ValueName: "AutoCheckUpdates"; ValueData: 1; Check: ShouldAutoUpdate; Flags: uninsdeletevalue
+; Unconditionally delete all registry keys and values for Disk Partitioner on uninstall without asking
+Root: HKCU; Subkey: "Software\AccessibleTools\DiskPartitioner"; Flags: uninsdeletekey
+Root: HKCU; Subkey: "Software\AccessibleTools"; Flags: uninsdeletekeyifempty
+
 [Run]
 Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent shellexec
 
 [UninstallDelete]
 Type: files; Name: "{commondesktop}\{#MyAppName}.lnk"
+Type: files; Name: "{localappdata}\DiskPartitioner_crash.log"
 Type: filesandordirs; Name: "{app}"
 
 [Code]
 var
   DesktopIconCheck: TNewCheckBox;
+  AutoUpdateCheck: TNewCheckBox;
+  PrivacyPolicyBtn: TNewButton;
+
+procedure PrivacyPolicyClick(Sender: TObject);
+var
+  ResultCode: Integer;
+begin
+  ShellExec('open', 'https://gist.github.com/AakanshNahadiya/4d4f4abe3878de9c43ff9d9b3b7c9ee3', '', '', SW_SHOWNORMAL, ewNoWait, ResultCode);
+end;
 
 function ShouldCreateDesktopIcon(): Boolean;
 begin
   Result := (DesktopIconCheck <> nil) and DesktopIconCheck.Checked;
+end;
+
+function ShouldAutoUpdate(): Boolean;
+begin
+  Result := (AutoUpdateCheck <> nil) and AutoUpdateCheck.Checked;
 end;
 
 procedure InitializeWizard();
@@ -78,6 +100,26 @@ begin
   DesktopIconCheck.Height := ScaleY(24);
   DesktopIconCheck.Caption := 'Create a &desktop shortcut';
   DesktopIconCheck.Checked := True;
+
+  // Embed daily update check option (Default unchecked for user privacy)
+  AutoUpdateCheck := TNewCheckBox.Create(WizardForm);
+  AutoUpdateCheck.Parent := WizardForm.SelectDirPage;
+  AutoUpdateCheck.Left := WizardForm.DirEdit.Left;
+  AutoUpdateCheck.Top := DesktopIconCheck.Top + DesktopIconCheck.Height + ScaleY(4);
+  AutoUpdateCheck.Width := WizardForm.DirEdit.Width;
+  AutoUpdateCheck.Height := ScaleY(22);
+  AutoUpdateCheck.Caption := 'Check for updates automatically &once per day';
+  AutoUpdateCheck.Checked := False;
+
+  // Embed Privacy Policy button
+  PrivacyPolicyBtn := TNewButton.Create(WizardForm);
+  PrivacyPolicyBtn.Parent := WizardForm.SelectDirPage;
+  PrivacyPolicyBtn.Left := WizardForm.DirEdit.Left;
+  PrivacyPolicyBtn.Top := AutoUpdateCheck.Top + AutoUpdateCheck.Height + ScaleY(8);
+  PrivacyPolicyBtn.Width := ScaleX(145);
+  PrivacyPolicyBtn.Height := ScaleY(26);
+  PrivacyPolicyBtn.Caption := 'View &Privacy Policy';
+  PrivacyPolicyBtn.OnClick := @PrivacyPolicyClick;
 end;
 
 procedure CurPageChanged(CurPageID: Integer);

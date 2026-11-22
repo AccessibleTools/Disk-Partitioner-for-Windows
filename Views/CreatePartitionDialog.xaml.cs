@@ -48,6 +48,24 @@ namespace DiskPartitioner.Views
             PopulateDriveLetters();
 
             Loaded += (s, e) => txtSizeValue.Focus();
+
+            KeyDown += (s, e) =>
+            {
+                if (e.Key == System.Windows.Input.Key.Escape)
+                {
+                    e.Handled = true;
+                    BtnCancel_Click(btnCancel, new RoutedEventArgs());
+                }
+                else if (e.Key == System.Windows.Input.Key.Enter)
+                {
+                    if (System.Windows.Input.Keyboard.FocusedElement is System.Windows.Controls.Button)
+                    {
+                        return;
+                    }
+                    e.Handled = true;
+                    BtnCreate_Click(btnCreate, new RoutedEventArgs());
+                }
+            };
         }
 
         private void PopulateDriveLetters()

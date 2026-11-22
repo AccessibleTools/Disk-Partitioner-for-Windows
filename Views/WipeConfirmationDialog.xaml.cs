@@ -15,6 +15,27 @@ namespace DiskPartitioner.Views
             txtDiskInfo.Text = $"Target: Disk {disk.DiskIndex} - {disk.Model} ({disk.FormattedSize}, {disk.PartitionsCount} partitions)";
 
             Loaded += (s, e) => txtConfirmation.Focus();
+
+            KeyDown += (s, e) =>
+            {
+                if (e.Key == System.Windows.Input.Key.Escape)
+                {
+                    e.Handled = true;
+                    BtnCancel_Click(btnCancel, new RoutedEventArgs());
+                }
+                else if (e.Key == System.Windows.Input.Key.Enter)
+                {
+                    if (System.Windows.Input.Keyboard.FocusedElement is System.Windows.Controls.Button)
+                    {
+                        return;
+                    }
+                    if (btnClean.IsEnabled)
+                    {
+                        e.Handled = true;
+                        BtnClean_Click(btnClean, new RoutedEventArgs());
+                    }
+                }
+            };
         }
 
         private void TxtConfirmation_TextChanged(object sender, TextChangedEventArgs e)

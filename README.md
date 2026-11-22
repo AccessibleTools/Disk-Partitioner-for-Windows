@@ -64,8 +64,8 @@ Disk Partitioner for Windows gives you the full power of DiskPart inside a clean
 
 ## Installation
 
-1. Go to the Releases page on GitHub: https://github.com/AakanshNahadiya/Disk-Partitioner-for-Windows/releases
-2. Download the latest installer (DiskPartitioner_Setup_v1.0.2.exe).
+1. Go to the Releases page on GitHub: https://github.com/AccessibleTools/Disk-Partitioner-for-Windows/releases
+2. Download the latest installer.
 3. Run the installer and follow the standard setup steps.
 
 ## Feedback and Contributions

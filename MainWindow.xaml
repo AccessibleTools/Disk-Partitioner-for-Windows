@@ -9,7 +9,6 @@
         Height="700" Width="1100"
         MinHeight="550" MinWidth="850"
         WindowStartupLocation="CenterScreen"
-        FocusManager.FocusedElement="{Binding ElementName=lstDisks}"
         Background="{StaticResource WindowBackgroundBrush}">
 
     <Window.Resources>
@@ -55,8 +54,8 @@
                         <MenuItem Header="E_xit" InputGestureText="Alt+F4" Click="MenuExit_Click"/>
                     </MenuItem>
                     <MenuItem x:Name="menuDisk" Header="_Disk">
-                        <MenuItem Header="_Clean / Wipe Selected Disk..." InputGestureText="C" Click="MenuDiskClean_Click"/>
-                        <MenuItem Header="Convert to _GPT" InputGestureText="G" Click="MenuDiskConvertGpt_Click"/>
+                        <MenuItem Header="_Clean / Wipe Selected Disk..." InputGestureText="Ctrl+Shift+C" Click="MenuDiskClean_Click"/>
+                        <MenuItem Header="Convert to _GPT" InputGestureText="Ctrl+G" Click="MenuDiskConvertGpt_Click"/>
                         <MenuItem Header="Convert to _MBR" Click="MenuDiskConvertMbr_Click"/>
                         <Separator/>
                         <MenuItem Header="Set _Read-Only" Click="MenuDiskReadOnly_Click"/>
@@ -65,11 +64,11 @@
                         <MenuItem Header="Bring _Online" Click="MenuDiskOnline_Click"/>
                     </MenuItem>
                     <MenuItem x:Name="menuPartition" Header="_Partition">
-                        <MenuItem Header="_Create New Partition..." InputGestureText="N" Click="MenuPartitionCreate_Click"/>
-                        <MenuItem Header="_Format Volume..." InputGestureText="F" Click="MenuPartitionFormat_Click"/>
-                        <MenuItem Header="Assign / Change _Drive Letter..." InputGestureText="L" Click="MenuPartitionDriveLetter_Click"/>
-                        <MenuItem Header="_Extend Volume..." InputGestureText="E" Click="MenuPartitionExtend_Click"/>
-                        <MenuItem Header="_Shrink Volume..." InputGestureText="S" Click="MenuPartitionShrink_Click"/>
+                        <MenuItem Header="_Create New Partition..." InputGestureText="Ctrl+N" Click="MenuPartitionCreate_Click"/>
+                        <MenuItem Header="_Format Volume..." InputGestureText="Ctrl+F" Click="MenuPartitionFormat_Click"/>
+                        <MenuItem Header="Assign / Change _Drive Letter..." InputGestureText="Ctrl+L" Click="MenuPartitionDriveLetter_Click"/>
+                        <MenuItem Header="_Extend Volume..." InputGestureText="Ctrl+E" Click="MenuPartitionExtend_Click"/>
+                        <MenuItem Header="_Shrink Volume..." InputGestureText="Ctrl+S" Click="MenuPartitionShrink_Click"/>
                         <Separator/>
                         <MenuItem Header="_Delete Partition" InputGestureText="Del" Click="MenuPartitionDelete_Click"/>
                         <MenuItem Header="_Force Delete Partition Override" InputGestureText="Shift+Del" Click="MenuPartitionForceDelete_Click"/>
@@ -155,20 +154,6 @@
                                             <Run Text=" | Partitions: "/><Run Text="{Binding PartitionsCount, Mode=OneWay}"/>
                                         </TextBlock>
                                     </Grid>
-                                    <Border.ContextMenu>
-                                        <ContextMenu>
-                                            <MenuItem Header="Clean / Wipe Disk..." InputGestureText="C" Click="MenuDiskClean_Click"/>
-                                            <MenuItem Header="Convert to GPT" InputGestureText="G" Click="MenuDiskConvertGpt_Click"/>
-                                            <MenuItem Header="Convert to MBR" Click="MenuDiskConvertMbr_Click"/>
-                                            <Separator/>
-                                            <MenuItem Header="Set Read-Only" Click="MenuDiskReadOnly_Click"/>
-                                            <MenuItem Header="Clear Read-Only" Click="MenuDiskClearReadOnly_Click"/>
-                                            <MenuItem Header="Take Offline" Click="MenuDiskOffline_Click"/>
-                                            <MenuItem Header="Bring Online" Click="MenuDiskOnline_Click"/>
-                                            <Separator/>
-                                            <MenuItem Header="Refresh Disk Topology" InputGestureText="F5" Click="BtnRefresh_Click"/>
-                                        </ContextMenu>
-                                    </Border.ContextMenu>
                                 </Border>
                             </DataTemplate>
                         </ListBox.ItemTemplate>
@@ -224,18 +209,6 @@
                                             <Run Text="{Binding FreeSpaceSummary, Mode=OneWay}"/>
                                         </TextBlock>
                                     </Grid>
-                                    <Border.ContextMenu>
-                                        <ContextMenu>
-                                            <MenuItem Header="Create New Partition..." InputGestureText="N" Click="MenuPartitionCreate_Click"/>
-                                            <MenuItem Header="Format Volume..." InputGestureText="F" Click="MenuPartitionFormat_Click"/>
-                                            <MenuItem Header="Assign / Change Drive Letter..." InputGestureText="L" Click="MenuPartitionDriveLetter_Click"/>
-                                            <MenuItem Header="Extend Volume..." InputGestureText="E" Click="MenuPartitionExtend_Click"/>
-                                            <MenuItem Header="Shrink Volume..." InputGestureText="S" Click="MenuPartitionShrink_Click"/>
-                                            <Separator/>
-                                            <MenuItem Header="Delete Partition" InputGestureText="Del" Click="MenuPartitionDelete_Click"/>
-                                            <MenuItem Header="Force Delete Partition Override" InputGestureText="Shift+Del" Click="MenuPartitionForceDelete_Click"/>
-                                        </ContextMenu>
-                                    </Border.ContextMenu>
                                 </Border>
                             </DataTemplate>
                         </ListBox.ItemTemplate>

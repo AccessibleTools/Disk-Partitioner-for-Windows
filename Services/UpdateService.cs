@@ -15,11 +15,11 @@ namespace DiskPartitioner.Services
     {
         public bool IsSuccess { get; set; } = true;
         public bool HasUpdate { get; set; } = false;
-        public string CurrentVersion { get; set; } = "1.0.2";
-        public string LatestVersion { get; set; } = "1.0.2";
+        public string CurrentVersion { get; set; } = "1.0.3";
+        public string LatestVersion { get; set; } = "1.0.3";
         public string ReleaseName { get; set; } = string.Empty;
         public string ReleaseNotes { get; set; } = string.Empty;
-        public string HtmlUrl { get; set; } = "https://github.com/AakanshNahadiya/Disk-Partitioner-for-Windows";
+        public string HtmlUrl { get; set; } = "https://github.com/AccessibleTools/Disk-Partitioner-for-Windows";
         public string? DownloadUrl { get; set; }
         public string? ExpectedSha256 { get; set; }
         public string Message { get; set; } = string.Empty;
@@ -31,7 +31,7 @@ namespace DiskPartitioner.Services
                 return HtmlUrl;
             }
             string ver = string.IsNullOrWhiteSpace(LatestVersion) ? CurrentVersion : LatestVersion;
-            return $"https://github.com/AakanshNahadiya/Disk-Partitioner-for-Windows/releases/tag/v{ver}";
+            return $"https://github.com/AccessibleTools/Disk-Partitioner-for-Windows/releases/tag/v{ver}";
         }
     }
 
@@ -68,7 +68,7 @@ namespace DiskPartitioner.Services
 
         public UpdateService(HttpClient? httpClient = null)
         {
-            _httpClient = httpClient ?? new HttpClient { Timeout = TimeSpan.FromSeconds(10) };
+            _httpClient = httpClient ?? new HttpClient { Timeout = Timeout.InfiniteTimeSpan };
             if (!_httpClient.DefaultRequestHeaders.Contains("User-Agent"))
             {
                 _httpClient.DefaultRequestHeaders.Add("User-Agent", "DiskPartitioner-UpdateChecker");
@@ -82,7 +82,7 @@ namespace DiskPartitioner.Services
         public string GetCurrentVersion()
         {
             var version = Assembly.GetExecutingAssembly().GetName().Version;
-            return version != null ? $"{version.Major}.{version.Minor}.{version.Build}" : "1.0.2";
+            return version != null ? $"{version.Major}.{version.Minor}.{version.Build}" : "1.0.3";
         }
 
         public bool IsAutoCheckEnabled()
@@ -185,7 +185,11 @@ namespace DiskPartitioner.Services
 
             try
             {
-                using var response = await _httpClient.GetAsync(ReleasesApiUrl, cancellationToken).ConfigureAwait(false);
+                using var timeoutCts = new CancellationTokenSource(TimeSpan.FromSeconds(45));
+                using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, timeoutCts.Token);
+                var token = linkedCts.Token;
+
+                using var response = await _httpClient.GetAsync(ReleasesApiUrl, token).ConfigureAwait(false);
 
                 // If repo does not have releases yet (404), gracefully report up to date
                 if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
@@ -204,7 +208,7 @@ namespace DiskPartitioner.Services
                     return info;
                 }
 
-                string json = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+                string json = await response.Content.ReadAsStringAsync(token).ConfigureAwait(false);
                 using var doc = JsonDocument.Parse(json);
                 var root = doc.RootElement;
 

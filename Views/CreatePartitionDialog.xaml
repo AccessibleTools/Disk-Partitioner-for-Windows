@@ -65,8 +65,8 @@
             <CheckBox Grid.Row="6" x:Name="chkQuickFormat" Content="Perform a quick format" IsChecked="True" FontSize="13" Foreground="{StaticResource TextPrimaryBrush}" Margin="0,4,0,12"/>
 
             <DockPanel Grid.Row="8" LastChildFill="False" Margin="0,16,0,0">
-                <Button x:Name="btnCreate" Content="Create Partition" Padding="16,8" DockPanel.Dock="Right" Background="{StaticResource AccentBrush}" Foreground="#FFFFFF" FontWeight="SemiBold" Click="BtnCreate_Click"/>
-                <Button x:Name="btnCancel" Content="Cancel" Padding="16,8" DockPanel.Dock="Right" Margin="0,0,10,0" Background="{StaticResource InputBackgroundBrush}" Foreground="{StaticResource TextPrimaryBrush}" BorderBrush="{StaticResource BorderBrush}" IsCancel="True" Click="BtnCancel_Click"/>
+                <Button x:Name="btnCreate" Content="Create Partition" Padding="16,8" DockPanel.Dock="Right" Background="{StaticResource AccentBrush}" Foreground="#FFFFFF" FontWeight="SemiBold" Click="BtnCreate_Click" AutomationProperties.Name="Create Partition"/>
+                <Button x:Name="btnCancel" Content="Cancel" Padding="16,8" DockPanel.Dock="Right" Margin="0,0,10,0" Background="{StaticResource InputBackgroundBrush}" Foreground="{StaticResource TextPrimaryBrush}" BorderBrush="{StaticResource BorderBrush}" Click="BtnCancel_Click" AutomationProperties.Name="Cancel"/>
             </DockPanel>
         </Grid>
     </Border>

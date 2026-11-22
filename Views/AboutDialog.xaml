@@ -17,7 +17,7 @@
             </Grid.RowDefinitions>
 
             <TextBlock Grid.Row="0" Text="Disk Partitioner for Windows" FontSize="18" FontWeight="Bold" Foreground="{StaticResource TextPrimaryBrush}" Margin="0,0,0,4"/>
-            <TextBlock x:Name="txtVersion" Grid.Row="1" Text="Version 1.0.2 by Accessible Tools" FontSize="12" Foreground="{StaticResource AccentBrush}" FontWeight="SemiBold" Margin="0,0,0,16"/>
+            <TextBlock x:Name="txtVersion" Grid.Row="1" Text="Version 1.0.3 by Accessible Tools" FontSize="12" Foreground="{StaticResource AccentBrush}" FontWeight="SemiBold" Margin="0,0,0,16"/>
 
             <StackPanel Grid.Row="2">
                 <TextBlock Text="An ultra-lightweight, high-performance, 100% accessible disk partition manager and DiskPart front-end for Windows." FontSize="13" Foreground="{StaticResource TextPrimaryBrush}" TextWrapping="Wrap" Margin="0,0,0,12"/>
@@ -28,7 +28,7 @@
                 <TextBlock Text="Live in-place storage updates preserving screen reader cursor focus." FontSize="12" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,0,4"/>
             </StackPanel>
 
-            <Button Grid.Row="3" x:Name="btnClose" Content="Close" Padding="16,8" HorizontalAlignment="Right" Background="{StaticResource InputBackgroundBrush}" Foreground="{StaticResource TextPrimaryBrush}" BorderBrush="{StaticResource BorderBrush}" IsCancel="True" Click="BtnClose_Click"/>
+            <Button Grid.Row="3" x:Name="btnClose" Content="Close" Padding="16,8" HorizontalAlignment="Right" Background="{StaticResource InputBackgroundBrush}" Foreground="{StaticResource TextPrimaryBrush}" BorderBrush="{StaticResource BorderBrush}" Click="BtnClose_Click" AutomationProperties.Name="Close"/>
         </Grid>
     </Border>
 </Window>

@@ -20,13 +20,23 @@ namespace DiskPartitioner
 
             DispatcherUnhandledException += (s, args) =>
             {
-                Debug.WriteLine($"[{DateTime.Now}] Dispatcher Exception: {args.Exception}");
+                try
+                {
+                    string logPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "DiskPartitioner_crash.log");
+                    File.AppendAllText(logPath, $"[{DateTime.Now}] Dispatcher Exception: {args.Exception}\n");
+                }
+                catch { }
                 args.Handled = true;
             };
 
             AppDomain.CurrentDomain.UnhandledException += (s, args) =>
             {
-                Debug.WriteLine($"[{DateTime.Now}] AppDomain Exception: {args.ExceptionObject}");
+                try
+                {
+                    string logPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "DiskPartitioner_crash.log");
+                    File.AppendAllText(logPath, $"[{DateTime.Now}] AppDomain Exception: {args.ExceptionObject}\n");
+                }
+                catch { }
             };
 
             bool isNewInstance = false;

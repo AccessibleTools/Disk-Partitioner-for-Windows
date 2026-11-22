@@ -387,7 +387,6 @@ namespace DiskPartitioner
 
             void ApplyFocus()
             {
-                listBox.Focus();
                 if (listBox.Items.Count > 0)
                 {
                     if (listBox.SelectedIndex < 0) listBox.SelectedIndex = 0;
@@ -404,16 +403,12 @@ namespace DiskPartitioner
                     {
                         container.Focus();
                         Keyboard.Focus(container);
-                    }
-                    else
-                    {
-                        Keyboard.Focus(listBox);
+                        return;
                     }
                 }
-                else
-                {
-                    Keyboard.Focus(listBox);
-                }
+
+                listBox.Focus();
+                Keyboard.Focus(listBox);
             }
 
             if (listBox.ItemContainerGenerator.Status == System.Windows.Controls.Primitives.GeneratorStatus.ContainersGenerated)
@@ -436,10 +431,44 @@ namespace DiskPartitioner
             }
         }
 
+        private void SelectAndFocusIndex(ListBox listBox, int index)
+        {
+            if (listBox == null || listBox.Items.Count == 0) return;
+            index = Math.Clamp(index, 0, listBox.Items.Count - 1);
+
+            listBox.SelectedIndex = index;
+            object targetItem = listBox.Items[index];
+            listBox.ScrollIntoView(targetItem);
+            listBox.UpdateLayout();
+
+            var container = listBox.ItemContainerGenerator.ContainerFromIndex(index) as ListBoxItem
+                ?? listBox.ItemContainerGenerator.ContainerFromItem(targetItem) as ListBoxItem;
+
+            if (container != null)
+            {
+                container.Focus();
+                Keyboard.Focus(container);
+            }
+            else
+            {
+                Dispatcher.BeginInvoke(DispatcherPriority.Input, () =>
+                {
+                    listBox.UpdateLayout();
+                    var retryContainer = listBox.ItemContainerGenerator.ContainerFromIndex(index) as ListBoxItem
+                        ?? listBox.ItemContainerGenerator.ContainerFromItem(targetItem) as ListBoxItem;
+                    if (retryContainer != null)
+                    {
+                        retryContainer.Focus();
+                        Keyboard.Focus(retryContainer);
+                    }
+                });
+            }
+        }
+
         private void LstDisks_PreviewKeyDown(object sender, KeyEventArgs e)
         {
-            // Right Arrow: Shift focus seamlessly into Partitions list
-            if (e.Key == Key.Right)
+            // Enter or Right Arrow: Shift focus seamlessly into Partitions list
+            if (e.Key == Key.Right || e.Key == Key.Enter)
             {
                 if (Partitions.Count > 0)
                 {
@@ -450,15 +479,33 @@ namespace DiskPartitioner
                     });
                 }
             }
-            else if (e.Key == Key.C)
+            else if ((Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control)
             {
-                e.Handled = true;
-                MenuDiskClean_Click(sender, e);
-            }
-            else if (e.Key == Key.G)
-            {
-                e.Handled = true;
-                MenuDiskConvertGpt_Click(sender, e);
+                if (e.Key == Key.C)
+                {
+                    if ((Keyboard.Modifiers & ModifierKeys.Shift) == ModifierKeys.Shift)
+                    {
+                        // Ctrl + Shift + C: Clean / Wipe Disk
+                        e.Handled = true;
+                        MenuDiskClean_Click(sender, e);
+                    }
+                    else
+                    {
+                        // Ctrl + C: Copy Disk details to clipboard
+                        if (lstDisks.SelectedItem is PhysicalDiskItem selDisk)
+                        {
+                            e.Handled = true;
+                            Clipboard.SetText(selDisk.DisplayName);
+                            Announce("Disk details copied to clipboard.");
+                        }
+                    }
+                }
+                else if (e.Key == Key.G)
+                {
+                    // Ctrl + G: Convert to GPT
+                    e.Handled = true;
+                    MenuDiskConvertGpt_Click(sender, e);
+                }
             }
         }
 
@@ -473,6 +520,15 @@ namespace DiskPartitioner
                     FocusListBoxItem(lstDisks);
                 });
             }
+            else if (e.Key == Key.Enter)
+            {
+                // Enter on Unallocated Space: Create Partition
+                if (lstPartitions.SelectedItem is PartitionItem part && part.IsUnallocated)
+                {
+                    e.Handled = true;
+                    MenuPartitionCreate_Click(sender, e);
+                }
+            }
             else if (e.Key == Key.Delete)
             {
                 e.Handled = true;
@@ -485,36 +541,77 @@ namespace DiskPartitioner
                     MenuPartitionDelete_Click(sender, e);
                 }
             }
-            else if (e.Key == Key.N)
+            else if ((Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control)
             {
-                e.Handled = true;
-                MenuPartitionCreate_Click(sender, e);
-            }
-            else if (e.Key == Key.F)
-            {
-                e.Handled = true;
-                MenuPartitionFormat_Click(sender, e);
-            }
-            else if (e.Key == Key.L)
-            {
-                e.Handled = true;
-                MenuPartitionDriveLetter_Click(sender, e);
-            }
-            else if (e.Key == Key.E)
-            {
-                e.Handled = true;
-                MenuPartitionExtend_Click(sender, e);
-            }
-            else if (e.Key == Key.S)
-            {
-                e.Handled = true;
-                MenuPartitionShrink_Click(sender, e);
+                if (e.Key == Key.C)
+                {
+                    if (lstPartitions.SelectedItem is PartitionItem selPart)
+                    {
+                        e.Handled = true;
+                        Clipboard.SetText(selPart.DisplayName);
+                        Announce("Partition details copied to clipboard.");
+                    }
+                }
+                else if (e.Key == Key.N)
+                {
+                    e.Handled = true;
+                    MenuPartitionCreate_Click(sender, e);
+                }
+                else if (e.Key == Key.F)
+                {
+                    e.Handled = true;
+                    MenuPartitionFormat_Click(sender, e);
+                }
+                else if (e.Key == Key.L)
+                {
+                    e.Handled = true;
+                    MenuPartitionDriveLetter_Click(sender, e);
+                }
+                else if (e.Key == Key.E)
+                {
+                    e.Handled = true;
+                    MenuPartitionExtend_Click(sender, e);
+                }
+                else if (e.Key == Key.S)
+                {
+                    e.Handled = true;
+                    MenuPartitionShrink_Click(sender, e);
+                }
             }
         }
 
         protected override void OnPreviewKeyDown(KeyEventArgs e)
         {
             base.OnPreviewKeyDown(e);
+
+            // Intercept Ctrl + Home and Ctrl + End to prevent WPF ScrollViewer from hijacking focus & pixel-scrolling
+            if ((Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control && (e.Key == Key.Home || e.Key == Key.End))
+            {
+                var activeList = lstDisks.IsKeyboardFocusWithin ? lstDisks : (lstPartitions.IsKeyboardFocusWithin ? lstPartitions : null);
+                if (activeList != null && activeList.Items.Count > 0)
+                {
+                    e.Handled = true;
+                    int targetIndex = e.Key == Key.Home ? 0 : activeList.Items.Count - 1;
+                    SelectAndFocusIndex(activeList, targetIndex);
+                    return;
+                }
+            }
+
+            // Shift + F10 or Apps key: behaves exactly like Alt and F10 (toggles the top menu bar)
+            if (e.Key == Key.Apps ||
+                ((e.Key == Key.F10 || (e.Key == Key.System && e.SystemKey == Key.F10)) && (Keyboard.Modifiers & ModifierKeys.Shift) == ModifierKeys.Shift))
+            {
+                e.Handled = true;
+                if (mainMenu.Visibility == Visibility.Visible)
+                {
+                    CloseMenu(restoreFocus: true);
+                }
+                else
+                {
+                    OpenMenu();
+                }
+                return;
+            }
 
             // Alt+F4: Close the application immediately on first press
             if ((e.Key == Key.System && e.SystemKey == Key.F4) ||

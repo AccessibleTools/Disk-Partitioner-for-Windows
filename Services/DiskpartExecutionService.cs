@@ -46,9 +46,9 @@ namespace DiskPartitioner.Services
             string cleanScript = scriptContent.TrimEnd();
             if (!cleanScript.EndsWith("exit", StringComparison.OrdinalIgnoreCase))
             {
-                cleanScript += "\nexit\n";
+                cleanScript += "\nexit";
             }
-            return cleanScript;
+            return cleanScript + "\n";
         }
 
         public async Task<DiskOperationResult> ExecuteScriptAsync(

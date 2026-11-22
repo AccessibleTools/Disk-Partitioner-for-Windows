@@ -112,6 +112,24 @@ namespace DiskPartitioner.Views
             txtPartitionInfo.Text = $"Partition {partition.PartitionNumber}{fsStr} on Disk {partition.DiskIndex} - Total: {partition.FormattedSize}{freeStr}";
 
             Loaded += (s, e) => txtDeltaValue.Focus();
+
+            KeyDown += (s, e) =>
+            {
+                if (e.Key == System.Windows.Input.Key.Escape)
+                {
+                    e.Handled = true;
+                    BtnCancel_Click(btnCancel, new RoutedEventArgs());
+                }
+                else if (e.Key == System.Windows.Input.Key.Enter)
+                {
+                    if (System.Windows.Input.Keyboard.FocusedElement is System.Windows.Controls.Button)
+                    {
+                        return;
+                    }
+                    e.Handled = true;
+                    BtnApply_Click(btnApply, new RoutedEventArgs());
+                }
+            };
         }
 
         private void CmbDeltaUnit_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)

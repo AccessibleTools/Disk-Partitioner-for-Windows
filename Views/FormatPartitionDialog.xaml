@@ -40,8 +40,8 @@
             <CheckBox Grid.Row="4" x:Name="chkQuickFormat" Content="Perform a quick format" IsChecked="True" FontSize="13" Foreground="{StaticResource TextPrimaryBrush}" Margin="0,4,0,0"/>
 
             <DockPanel Grid.Row="6" LastChildFill="False" Margin="0,16,0,0">
-                <Button x:Name="btnFormat" Content="Format" Padding="16,8" DockPanel.Dock="Right" Background="{StaticResource AccentBrush}" Foreground="#FFFFFF" FontWeight="SemiBold" Click="BtnFormat_Click"/>
-                <Button x:Name="btnCancel" Content="Cancel" Padding="16,8" DockPanel.Dock="Right" Margin="0,0,10,0" Background="{StaticResource InputBackgroundBrush}" Foreground="{StaticResource TextPrimaryBrush}" BorderBrush="{StaticResource BorderBrush}" IsCancel="True" Click="BtnCancel_Click"/>
+                <Button x:Name="btnFormat" Content="Format" Padding="16,8" DockPanel.Dock="Right" Background="{StaticResource AccentBrush}" Foreground="#FFFFFF" FontWeight="SemiBold" Click="BtnFormat_Click" AutomationProperties.Name="Format"/>
+                <Button x:Name="btnCancel" Content="Cancel" Padding="16,8" DockPanel.Dock="Right" Margin="0,0,10,0" Background="{StaticResource InputBackgroundBrush}" Foreground="{StaticResource TextPrimaryBrush}" BorderBrush="{StaticResource BorderBrush}" Click="BtnCancel_Click" AutomationProperties.Name="Cancel"/>
             </DockPanel>
         </Grid>
     </Border>

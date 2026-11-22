@@ -32,6 +32,24 @@ namespace DiskPartitioner.Views
             PopulateAvailableDriveLetters();
 
             Loaded += (s, e) => cmbDriveLetters.Focus();
+
+            KeyDown += (s, e) =>
+            {
+                if (e.Key == System.Windows.Input.Key.Escape)
+                {
+                    e.Handled = true;
+                    BtnCancel_Click(btnCancel, new RoutedEventArgs());
+                }
+                else if (e.Key == System.Windows.Input.Key.Enter)
+                {
+                    if (System.Windows.Input.Keyboard.FocusedElement is System.Windows.Controls.Button)
+                    {
+                        return;
+                    }
+                    e.Handled = true;
+                    BtnApply_Click(btnApply, new RoutedEventArgs());
+                }
+            };
         }
 
         private void PopulateAvailableDriveLetters()
